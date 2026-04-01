@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IDX Portfolio Balancer — Tubagus Shilham Wahid</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: rgba(0,0,0,0.08);
+    --border2: rgba(0,0,0,0.14);
+    --text: #1a1a18;
+    --text2: #6b6b67;
+    --text3: #9b9b95;
+    --green: #1a7a56; --green-bg: #e4f5ed;
+    --red: #b83232;   --red-bg: #fceaea;
+    --amber: #8a5e10; --amber-bg: #fdf0d5;
+    --blue: #1a4f8a;  --blue-bg: #e4eef9;
+    --radius: 10px; --radius-sm: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; min-height: 100vh; }
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; }
+  .logo { font-size: 15px; font-weight: 500; letter-spacing: -0.02em; }
+  .logo span { color: var(--text2); font-weight: 300; }
+  .badge-header { font-size: 11px; background: var(--green-bg); color: var(--green); padding: 3px 8px; border-radius: 20px; font-weight: 500; margin-left: 10px; }
+  .clock { font-size: 12px; color: var(--text3); font-family: 'DM Mono', monospace; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+  .page-title { font-size: 22px; font-weight: 500; letter-spacing: -0.03em; margin-bottom: 4px; }
+  .page-sub { font-size: 13px; color: var(--text2); margin-bottom: 1.5rem; }
+  .mgrid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .mc { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+  .ml { font-size: 11px; color: var(--text3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
+  .mv { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+  .stat-change { font-size: 11px; margin-top: 4px; color: var(--text3); }
+  .g { color: var(--green); } .r { color: var(--red); } .a { color: var(--amber); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+  .card-title { font-size: 11px; font-weight: 500; color: var(--text3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 1rem; }
+  .tw { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1.25rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--surface2); color: var(--text2); font-weight: 500; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); font-size: 12px; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); transition: background .1s; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+  .bg { background: var(--green-bg); color: var(--green); }
+  .br { background: var(--red-bg); color: var(--red); }
+  .ba { background: var(--amber-bg); color: var(--amber); }
+  .bb { background: var(--blue-bg); color: var(--blue); }
+  .ctrl { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 13px; }
+  .ctrl label { color: var(--text2); min-width: 150px; }
+  .ctrl input[type=range] { flex: 1; -webkit-appearance: none; height: 4px; background: var(--border2); border-radius: 2px; outline: none; }
+  .ctrl input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: var(--text); border-radius: 50%; cursor: pointer; }
+  .ctrl .v { min-width: 52px; font-weight: 500; text-align: right; font-family: 'DM Mono', monospace; font-size: 12px; }
+  .ctrl select { flex: 1; padding: 7px 10px; border: 1px solid var(--border2); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; cursor: pointer; }
+  .btn { padding: 8px 18px; font-size: 13px; border-radius: var(--radius-sm); border: 1px solid var(--border2); background: none; color: var(--text); cursor: pointer; margin-right: 8px; margin-top: 4px; font-family: 'DM Sans', sans-serif; transition: background .15s; }
+  .btn:hover { background: var(--surface2); }
+  .btnp { background: var(--text); color: var(--surface); border-color: var(--text); }
+  .btnp:hover { opacity: .85; background: var(--text); }
+  .ab { height: 30px; border-radius: var(--radius-sm); overflow: hidden; display: flex; margin-bottom: 6px; }
+  .as { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: #fff; transition: width .5s cubic-bezier(.4,0,.2,1); }
+  .logbox { background: var(--surface2); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 12px; font-family: 'DM Mono', monospace; color: var(--text2); line-height: 2; max-height: 160px; overflow-y: auto; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+  .sl { font-size: 11px; font-weight: 500; color: var(--text3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .chip { display: inline-block; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text2); margin-right: 4px; }
+  .drift-bar-wrap { margin-bottom: 6px; }
+  .drift-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+  .drift-bar-bg { background: var(--surface2); border-radius: 3px; height: 8px; overflow: hidden; }
+  .drift-bar-fill { height: 100%; border-radius: 3px; transition: width .5s; }
+  .footer { text-align: center; padding: 2rem; font-size: 12px; color: var(--text3); border-top: 1px solid var(--border); margin-top: 2rem; }
+  @media (max-width: 700px) { .mgrid { grid-template-columns: repeat(2,1fr); } .row2 { grid-template-columns: 1fr; } .container { padding: 1rem; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div style="display:flex;align-items:center">
+    <div class="logo">IDX Portfolio Balancer <span>/ Tubagus Shilham Wahid</span></div>
+    <span class="badge-header">Portfolio Project</span>
+  </div>
+  <div class="clock" id="clock"></div>
+</div>
+
+<div class="container">
+
+  <div class="page-title">Automated portfolio balancer</div>
+  <div class="page-sub">Monitors portfolio drift against target weights and triggers rebalance trades when threshold is exceeded. Built with Python, pandas, and yfinance.</div>
+
+  <div class="mgrid">
+    <div class="mc">
+      <div class="ml">Portfolio value</div>
+      <div class="mv">Rp 100 jt</div>
+      <div class="stat-change">IDR 100,000,000</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Assets tracked</div>
+      <div class="mv" id="p-assets">5</div>
+      <div class="stat-change">IDX equities + cash</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Drifted assets</div>
+      <div class="mv a" id="p-drift">2</div>
+      <div class="stat-change" id="p-drift-sub">above threshold</div>
+    </div>
+    <div class="mc">
+      <div class="ml">Last rebalanced</div>
+      <div class="mv" id="p-last">3h ago</div>
+      <div class="stat-change">auto-checked every 8h</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Rebalance settings</div>
+    <div class="ctrl">
+      <label>Drift threshold (%)</label>
+      <input type="range" id="drift-t" min="1" max="20" step="1" value="5" oninput="updateBalancer()">
+      <span class="v" id="drift-tv">5%</span>
+    </div>
+    <div class="ctrl">
+      <label>Portfolio value (Rp jt)</label>
+      <input type="range" id="port-size" min="10" max="500" step="10" value="100" oninput="updateBalancer()">
+      <span class="v" id="port-size-v">100 jt</span>
+    </div>
+    <div class="ctrl">
+      <label>Check interval</label>
+      <select id="chk-int">
+        <option>Every 1 hour</option>
+        <option selected>Every 8 hours</option>
+        <option>Daily</option>
+        <option>Weekly</option>
+      </select>
+    </div>
+    <button class="btn btnp" onclick="rebalance()">Rebalance now</button>
+    <button class="btn" onclick="randomiseDrift()">Simulate market drift</button>
+  </div>
+
+  <div class="sl">Allocation: current vs target</div>
+  <div class="card">
+    <div style="font-size:12px;color:var(--text3);margin-bottom:6px">Current allocation</div>
+    <div class="ab" id="cur-bar"></div>
+    <div style="font-size:12px;color:var(--text3);margin:14px 0 6px">Target allocation</div>
+    <div class="ab" id="tgt-bar"></div>
+    <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:14px" id="pb-legend"></div>
+  </div>
+
+  <div class="sl">Drift visualisation</div>
+  <div class="card" id="drift-vis"></div>
+
+  <div class="sl">Asset breakdown</div>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Ticker</th><th>Company name</th><th>Current %</th><th>Target %</th>
+          <th>Drift</th><th>Trade needed</th><th>Trade value</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="pb-body"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">How rebalancing works</div>
+    <div style="font-size:13px;color:var(--text2);line-height:2.1">
+      <div><span class="badge bb">1</span>&nbsp; Set target weights for each asset (e.g. BBCA = 35%)</div>
+      <div style="margin-top:6px"><span class="badge bb">2</span>&nbsp; Monitor live prices — portfolio weights shift as prices move</div>
+      <div style="margin-top:6px"><span class="badge bb">3</span>&nbsp; When drift exceeds threshold, calculate trade to restore weights</div>
+      <div style="margin-top:6px"><span class="badge bb">4</span>&nbsp; Execute buy/sell orders to bring portfolio back on target</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Rebalance log</div>
+    <div class="logbox" id="pb-log"></div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Built with Python · pandas · numpy · yfinance · Streamlit &nbsp;|&nbsp; Tubagus Shilham Wahid &nbsp;|&nbsp; Data simulated for demo purposes
+</div>
+
+<script>
+function updateClock() {
+  const n = new Date();
+  document.getElementById('clock').textContent =
+    n.toLocaleDateString('id-ID',{weekday:'short',day:'numeric',month:'short',year:'numeric'}) + ' · ' +
+    n.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+updateClock(); setInterval(updateClock,1000);
+
+const COLORS = ['#185FA5','#1a7a56','#8a5e10','#534AB7','#888780'];
+
+let portfolio = [
+  {ticker:'BBCA', name:'Bank Central Asia',       cur:38.2, tgt:35},
+  {ticker:'BBRI', name:'Bank Rakyat Indonesia',   cur:22.1, tgt:25},
+  {ticker:'BUMI', name:'Bumi Resources',          cur:8.4,  tgt:10},
+  {ticker:'TLKM', name:'Telkom Indonesia',        cur:18.9, tgt:20},
+  {ticker:'CASH', name:'Cash / Money market',     cur:12.4, tgt:10},
+];
+
+function updateBalancer() {
+  const thresh   = +document.getElementById('drift-t').value;
+  const portSize = +document.getElementById('port-size').value;
+  document.getElementById('drift-tv').textContent    = thresh + '%';
+  document.getElementById('port-size-v').textContent = portSize + ' jt';
+
+  const portValue = portSize * 1000000;
+  const drifted = portfolio.filter(a => Math.abs(a.cur - a.tgt) >= thresh).length;
+  document.getElementById('p-drift').textContent     = drifted;
+  document.getElementById('p-assets').textContent   = portfolio.length;
+  document.getElementById('p-drift-sub').textContent = drifted > 0 ? 'need rebalancing' : 'all on track';
+
+  const barHTML = (key) => portfolio.map((a,i) =>
+    `<div class="as" style="width:${a[key].toFixed(1)}%;background:${COLORS[i]}">${a[key]>=9?a.ticker:''}</div>`
+  ).join('');
+  document.getElementById('cur-bar').innerHTML = barHTML('cur');
+  document.getElementById('tgt-bar').innerHTML = barHTML('tgt');
+
+  document.getElementById('pb-legend').innerHTML = portfolio.map((a,i) =>
+    `<span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2)">
+      <span style="width:10px;height:10px;border-radius:2px;background:${COLORS[i]}"></span>${a.ticker} (${a.cur.toFixed(1)}%)
+    </span>`
+  ).join('');
+
+  document.getElementById('drift-vis').innerHTML =
+    `<div style="font-size:12px;color:var(--text3);margin-bottom:12px">Drift from target weight — red bar = above threshold</div>` +
+    portfolio.map((a,i) => {
+      const drift = Math.abs(a.cur - a.tgt);
+      const over = drift >= thresh;
+      const pct = Math.min(drift / 15 * 100, 100);
+      return `<div class="drift-bar-wrap">
+        <div class="drift-label">
+          <span><strong>${a.ticker}</strong> — ${a.name}</span>
+          <span class="${over?'r':'g'}">${(a.cur-a.tgt>0?'+':'') + (a.cur-a.tgt).toFixed(1)}% drift</span>
+        </div>
+        <div class="drift-bar-bg">
+          <div class="drift-bar-fill" style="width:${pct}%;background:${over?'var(--red)':COLORS[i]}"></div>
+        </div>
+      </div>`;
+    }).join('');
+
+  document.getElementById('pb-body').innerHTML = portfolio.map((a,i) => {
+    const drift = a.cur - a.tgt;
+    const absDrift = Math.abs(drift);
+    const tradeVal = absDrift / 100 * portValue;
+    const over = absDrift >= thresh;
+    const action = a.cur > a.tgt ? 'Sell' : 'Buy';
+    return `<tr>
+      <td><strong style="color:${COLORS[i]}">${a.ticker}</strong></td>
+      <td style="color:var(--text2)">${a.name}</td>
+      <td>${a.cur.toFixed(1)}%</td>
+      <td>${a.tgt.toFixed(1)}%</td>
+      <td class="${drift>0?'r':drift<0?'g':''}">${drift>0?'+':''}${drift.toFixed(1)}%</td>
+      <td>${over ? `<span class="badge ${action==='Sell'?'br':'bg'}">${action}</span>` : '—'}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${over ? 'Rp '+tradeVal.toLocaleString('id-ID') : '—'}</td>
+      <td><span class="badge ${over?'br':'bg'}">${over?'Rebalance':'On track'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function rebalance() {
+  const thresh   = +document.getElementById('drift-t').value;
+  const portSize = +document.getElementById('port-size').value;
+  const portValue = portSize * 1000000;
+  const n = new Date();
+  const ts = n.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  const entries = [
+    `[${ts}] Rebalance triggered — threshold: ${thresh}%, portfolio: Rp ${portValue.toLocaleString('id-ID')}`,
+  ];
+  let anyTrade = false;
+  portfolio.forEach(a => {
+    const drift = a.cur - a.tgt;
+    const absDrift = Math.abs(drift);
+    const tradeVal = absDrift / 100 * portValue;
+    if (absDrift >= thresh) {
+      const action = a.cur > a.tgt ? 'SELL' : 'BUY';
+      entries.push(`[${ts}] ${a.ticker}: drift ${drift>0?'+':''}${drift.toFixed(1)}% → ${action} Rp ${tradeVal.toLocaleString('id-ID')}`);
+      a.cur = a.tgt;
+      anyTrade = true;
+    } else {
+      entries.push(`[${ts}] ${a.ticker}: drift ${drift>0?'+':''}${drift.toFixed(1)}% — within threshold, no action`);
+    }
+  });
+  entries.push(anyTrade
+    ? `[${ts}] Rebalance complete. All positions restored to target weights.`
+    : `[${ts}] No trades needed. Portfolio already within threshold.`);
+  document.getElementById('pb-log').innerHTML = entries.map(e => `<div>${e}</div>`).join('');
+  document.getElementById('p-last').textContent = 'just now';
+  updateBalancer();
+}
+
+function randomiseDrift() {
+  portfolio.forEach(a => {
+    const shift = (Math.random() * 10 - 5);
+    a.cur = Math.max(1, Math.min(60, a.tgt + shift));
+  });
+  const total = portfolio.reduce((s,a) => s+a.cur, 0);
+  portfolio.forEach(a => a.cur = parseFloat((a.cur / total * 100).toFixed(1)));
+  const n = new Date();
+  const ts = n.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('pb-log').innerHTML =
+    `<div>[${ts}] Market drift simulated — prices shifted, weights recalculated</div>` +
+    portfolio.map(a => `<div>[${ts}] ${a.ticker}: now ${a.cur.toFixed(1)}% (target ${a.tgt.toFixed(1)}%)</div>`).join('');
+  updateBalancer();
+}
+
+function initLog() {
+  document.getElementById('pb-log').innerHTML = [
+    '[08:00] Portfolio monitor started',
+    '[08:00] Checking 5 assets against target weights...',
+    '[08:01] BBCA: +3.2% drift — within 5% threshold',
+    '[08:01] BBRI: -2.9% drift — within 5% threshold',
+    '[08:01] BUMI: -1.6% drift — within 5% threshold',
+    '[08:01] TLKM: -1.1% drift — within 5% threshold',
+    '[08:01] CASH: +2.4% drift — within 5% threshold',
+    '[08:01] No rebalance needed. Next check in 8 hours.',
+  ].map(e => `<div>${e}</div>`).join('');
+}
+
+updateBalancer();
+initLog();
+</script>
+</body>
+</html>
